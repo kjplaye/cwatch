@@ -11,6 +11,23 @@ represented by colors:
    CYAN  : Change occured  1000 attempts ago.
 MAGENTA  : Change occured 10000 attempts ago.
 
+
+                  EXAMPLE Banner
+-----------------------------------------------------
+  2.00 | Mon Oct  3 02:43:12 5644 |   2.01 |  10.03
+-----------------------------------------------------
+   (1)              (2)               (3)      (4)
+
+1) delay between evaluations
+2) timestamp for this evaluation
+3) time since most recent change
+4) time since least recent change
+
+
+
+OPTIONS
+--------
+
 -d : You can change the default delay between commands.  Note that bigger
      strings will place higher demands on the CPU (and memory).  So there
      is a lower bound to how fast commands are executed.

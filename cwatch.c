@@ -25,6 +25,7 @@
 #define DEFAULT_DELAY 2.0
 #define SMALL_WAIT 0.01
 #define TEN_TO_THE_NINE 1000000L
+#define MAX_TIME_STR 100
 
 int max_str;
 int half_window_size;
@@ -42,6 +43,7 @@ int * match;
 
 #define RINDEX(h,i) ((h) * max_str + (i))
 unsigned char * ring_buffer;
+double * frame_time;
 int rb_current = 0;
 int rb_size = 0;
 
@@ -70,12 +72,14 @@ int get_color(int index) {
 
 // [y][w] --> (w+y-half_window_size, y)
 // (x,y)  --> [y][x-y+half_window_size]
-int edit_distance_color(unsigned char * model, unsigned char * old, int * color, int fill_color) {
+int edit_distance_color(unsigned char * model, unsigned char * old, int * color, int fill_color, int * difference_flag) {
   int i,x,y,w,xx,yy,ww,ss,mm,best_i,best_ds,best_mm,best_xx,best_yy,best_ww,len_model,len_old;
   int dx[3] = {1,0,1};
   int dy[3] = {1,1,0};
   int ds[3] = {MATCH_SCORE, DELETE_SCORE, INSERT_SCORE};
   int dm[3] = {1,0,0};
+
+  *difference_flag = 0;
 
   len_model = strlen(model);
   len_old = strlen(old);
@@ -83,6 +87,7 @@ int edit_distance_color(unsigned char * model, unsigned char * old, int * color,
     // Empty string, bail.
     for(y=0;y<len_model;y++)
       color[y] = fill_color;
+    *difference_flag = 1;
     return STATUS_EMPTY_STRING;      
   }
 
@@ -129,9 +134,13 @@ int edit_distance_color(unsigned char * model, unsigned char * old, int * color,
       // window_size too small, bail.
       for(y=0;y<len_model;y++)
 	color[y] = fill_color;
+      *difference_flag = 1;
       return STATUS_WINDOW_SIZE_TOO_SMALL;
     }
-    if (!match[VINDEX(yy,ww)]) color[yy] = fill_color;
+    if (!match[VINDEX(yy,ww)]) {
+      color[yy] = fill_color;
+      *difference_flag = 1;
+    }
     if (yy == 0 && ww <= half_window_size) break;
     y = prev_y[VINDEX(yy,ww)];
     x = prev_x[VINDEX(yy,ww)];
@@ -142,15 +151,18 @@ int edit_distance_color(unsigned char * model, unsigned char * old, int * color,
   return STATUS_GOOD;
 }
 
-void cprint(unsigned char * model, int * color, double duration, int status) {
+void cprint(unsigned char * model, int * color, double duration, int status, double time_since_most_recent_change, double time_since_least_recent_change) {
   int i,j;
   int current_color = -1;
   time_t tm;
+  char time_str[MAX_TIME_STR];
 
+  strcpy(time_str,ctime(&tm));
+  time_str[strlen(time_str)-1] = 0;
   tm = time(NULL);
   printf("\033[34m");
-  printf("----------------------------------------\n");
-  printf("%6.2f sec | %s", duration, ctime(&tm));
+  printf("-----------------------------------------------------\n");
+  printf("%6.2f | %s | %6.2f | %6.2f\n", duration, time_str, time_since_most_recent_change, time_since_least_recent_change);
   if (status == STATUS_WINDOW_SIZE_TOO_SMALL) {
     printf("\033[31m");
     printf("window_size_TOO_SMALL - consider increasing it\n");
@@ -165,7 +177,7 @@ void cprint(unsigned char * model, int * color, double duration, int status) {
     printf("STRING TRUNCATED - consider increasing max_string_size\n");
     printf("\033[34m");
   }
-  printf("----------------------------------------\n");
+  printf("-----------------------------------------------------\n");
   printf("\033[0m");
   
   for(i=0;i<strlen(model);i++) {
@@ -207,51 +219,52 @@ void argparse(int argc, char ** argv, double * delay, int * max_str, int * half_
   *history = DEFAULT_HISTORY_SIZE;
   
   if (argc <= 1) {
-  printf("Usage:\n");
-  printf(" cwatch [options] command\n");
-  printf("\n");
-  printf("Options:\n");
-  printf("  -d                      delay (default = 2 sec)\n");
-  printf("  -w                      window_size (default = 400)\n");
-  printf("  -s                      max_string_size (default = 10000)\n");
-  printf("  -h                      history to store (default = 10000)\n");
-  printf("\n");
-  
-  exit(1);
-}
+    printf("Usage:\n");
+    printf(" cwatch [options] command\n");
+    printf("\n");
+    printf("Options:\n");
+    printf("  -d                      delay (default = 2 sec)\n");
+    printf("  -w                      window_size (default = 400)\n");
+    printf("  -s                      max_string_size (default = 10000)\n");
+    printf("  -h                      history to store (default = 10000)\n");
+    printf("\n");
+    
+    exit(1);
+  }
   
   for(i=1;i<argc-2;i++) {
-  if (!strcmp(argv[i],"-d")) {
-  *delay = atof(argv[i+1]);
-}
+    if (!strcmp(argv[i],"-d")) {
+      *delay = atof(argv[i+1]);
+    }
   }
-
+  
   for(i=1;i<argc-2;i++) {
     if (!strcmp(argv[i],"-s")) {
-	*max_str = atoi(argv[i+1]);
-      }
+      *max_str = atoi(argv[i+1]);
+    }
   }  
   
   for(i=1;i<argc-2;i++) {
     if (!strcmp(argv[i],"-w")) {
-	*half_window_size = atoi(argv[i+1]);
-      }
-}
+      *half_window_size = atoi(argv[i+1]);
+    }
+  }
   
   for(i=1;i<argc-2;i++) {
-  if (!strcmp(argv[i],"-h")) {
-  *history = atoi(argv[i+1]);
-}
-
-  
-
-}
+    if (!strcmp(argv[i],"-h")) {
+      *history = atoi(argv[i+1]);
+    }
+  }
 }
 
 int main(int argc, char ** argv) {
   int i, j, h, status;
   double tic, toc;
   double delay;
+  int difference_flag;
+  double time_since_most_recent_change;
+  double time_since_least_recent_change;
+  double interval;
 
   argparse(argc, argv, &delay, &max_str, &half_window_size, &history);
   window_size = 2*half_window_size;
@@ -264,24 +277,34 @@ int main(int argc, char ** argv) {
   if ((model_color = malloc(sizeof(int) * max_str))==NULL) {fprintf(stderr,"Out of memory\n");}
 
   if ((ring_buffer = malloc(sizeof(unsigned char) * history * max_str))==NULL) {fprintf(stderr,"Out of memory\n");}
+  if ((frame_time = malloc(sizeof(double) * history))==NULL) {fprintf(stderr,"Out of memory\n");}
+
   
   tic = get_seconds();
   while(1) {
     toc = tic;
     tic = get_seconds();
     run_command(argv[argc-1], &ring_buffer[RINDEX(rb_current,0)]);
+    frame_time[rb_current] = get_seconds();
     if (++rb_size >= history) rb_size = history;
     for(i=0;i<max_str;i++) model_color[i] = -1;
+    time_since_most_recent_change = 0;
+    time_since_least_recent_change = 0;
     for(h=rb_size-1;h>0;h--) {
       j = rb_current - h;
       if (j < 0) j += history;
-      status = edit_distance_color(&ring_buffer[RINDEX(rb_current,0)], &ring_buffer[RINDEX(j,0)], model_color, get_color(h));
+      status = edit_distance_color(&ring_buffer[RINDEX(rb_current,0)], &ring_buffer[RINDEX(j,0)], model_color, get_color(h), &difference_flag);
+      if (difference_flag) {
+	interval = frame_time[rb_current] - frame_time[j];
+	time_since_most_recent_change = interval;
+	if (!time_since_least_recent_change) time_since_least_recent_change = interval;
+      }
     }
     while (tic - toc < delay) {
       usleep(SMALL_WAIT * TEN_TO_THE_NINE);
       tic = get_seconds();
     }
-    cprint(&ring_buffer[RINDEX(rb_current,0)], model_color, tic - toc, status);
+    cprint(&ring_buffer[RINDEX(rb_current,0)], model_color, tic - toc, status, time_since_most_recent_change, time_since_least_recent_change);
     if (++rb_current >= history) rb_current = 0;
   }
 }
