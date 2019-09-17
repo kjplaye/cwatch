@@ -22,7 +22,7 @@
 #define DEFAULT_MAX_STR 10000
 #define DEFAULT_HISTORY_SIZE 10000
 #define DEFAULT_HALF_WINDOW_SIZE 400
-#define DEFAULT_DELAY 0.25
+#define DEFAULT_DELAY 2.0
 #define SMALL_WAIT 0.01
 #define TEN_TO_THE_NINE 1000000L
 
@@ -146,26 +146,7 @@ void cprint(unsigned char * model, int * color, double duration, int status) {
   int i,j;
   int current_color = -1;
   time_t tm;
-  for(i=0;i<strlen(model);i++) {
-    if (color[i]!=current_color) {
-      if (color[i]==-1) {
-	printf("\033[0m");
-      } else {
-	printf("\033[%dm", ansi_color[color[i]]);	
-      }
-      current_color = color[i];
-    }
-    if ((color[i] != -1) && (model[i]==' ')) {
-      printf("_");
-    } else if ((color[i] != -1) && (model[i]=='\t')) {
-      for(j=0;j<8;j++) printf("_");
-    } else if ((color[i] != -1) && (model[i]=='\n')) {
-      printf("/\n");
-    } else {
-      printf("%c",model[i]);
-    }
-  }
-  if (model[strlen(model)-1] != '\n') printf("\n");
+
   tm = time(NULL);
   printf("\033[34m");
   printf("----------------------------------------\n");
@@ -186,6 +167,27 @@ void cprint(unsigned char * model, int * color, double duration, int status) {
   }
   printf("----------------------------------------\n");
   printf("\033[0m");
+  
+  for(i=0;i<strlen(model);i++) {
+    if (color[i]!=current_color) {
+      if (color[i]==-1) {
+	printf("\033[0m");
+      } else {
+	printf("\033[%dm", ansi_color[color[i]]);	
+      }
+      current_color = color[i];
+    }
+    if ((color[i] != -1) && (model[i]==' ')) {
+      printf("_");
+    } else if ((color[i] != -1) && (model[i]=='\t')) {
+      for(j=0;j<8;j++) printf("_");
+    } else if ((color[i] != -1) && (model[i]=='\n')) {
+      printf("/\n");
+    } else {
+      printf("%c",model[i]);
+    }
+  }
+  if (model[strlen(model)-1] != '\n') printf("\n");
 }
  
 double get_seconds(){
