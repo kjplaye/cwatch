@@ -159,9 +159,10 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
   char time_str[MAX_TIME_STR];
 
   if (clear_terminal) printf("\033[?1049h\033[H");
+
+  tm = time(NULL);
   strcpy(time_str,ctime(&tm));
   time_str[strlen(time_str)-1] = 0;
-  tm = time(NULL);
   printf("\033[34m");
   printf("-----------------------------------------------------\n");
   printf("%6.2f | %s | %6.2f | %6.2f\n", duration, time_str, time_since_most_recent_change, time_since_least_recent_change);
