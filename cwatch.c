@@ -152,7 +152,7 @@ int edit_distance_color(unsigned char * model, unsigned char * old, int * color,
   return STATUS_GOOD;
 }
 
-void cprint(unsigned char * model, int * color, double duration, int status, double time_since_most_recent_change, double time_since_least_recent_change) {
+void cprint(unsigned char * model, int * color, double duration, int status, double time_since_most_recent_change) {
   int i,j;
   int current_color = -1;
   time_t tm;
@@ -164,8 +164,8 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
   strcpy(time_str,ctime(&tm));
   time_str[strlen(time_str)-1] = 0;
   printf("\033[34m");
-  printf("-----------------------------------------------------\n");
-  printf("%6.2f | %s | %6.2f | %6.2f\n", duration, time_str, time_since_most_recent_change, time_since_least_recent_change);
+  printf("----------------------------------------------\n");
+  printf("%6.2f | %s | %6.2f\n", duration, time_str, time_since_most_recent_change);
   if (status == STATUS_WINDOW_SIZE_TOO_SMALL) {
     printf("\033[31m");
     printf("window_size_TOO_SMALL - consider increasing it\n");
@@ -180,7 +180,7 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
     printf("STRING TRUNCATED - consider increasing max_string_size\n");
     printf("\033[34m");
   }
-  printf("-----------------------------------------------------\n");
+  printf("----------------------------------------------\n");
   printf("\033[0m");
   
   for(i=0;i<strlen(model);i++) {
@@ -298,8 +298,8 @@ int main(int argc, char ** argv) {
     frame_time[rb_current] = get_seconds();
     if (++rb_size >= history) rb_size = history;
     for(i=0;i<max_str;i++) model_color[i] = -1;
-    time_since_most_recent_change = 0;
-    time_since_least_recent_change = 0;
+    time_since_most_recent_change = 0.0;
+    time_since_least_recent_change = 0.0;
     for(h=rb_size-1;h>0;h--) {
       j = rb_current - h;
       if (j < 0) j += history;
@@ -307,14 +307,13 @@ int main(int argc, char ** argv) {
       if (difference_flag) {
 	interval = frame_time[rb_current] - frame_time[j];
 	time_since_most_recent_change = interval;
-	if (!time_since_least_recent_change) time_since_least_recent_change = interval;
       }
     }
     while (tic - toc < delay) {
       usleep(SMALL_WAIT * TEN_TO_THE_NINE);
       tic = get_seconds();
     }
-    cprint(&ring_buffer[RINDEX(rb_current,0)], model_color, tic - toc, status, time_since_most_recent_change, time_since_least_recent_change);
+    cprint(&ring_buffer[RINDEX(rb_current,0)], model_color, tic - toc, status, time_since_most_recent_change);
     if (++rb_current >= history) rb_current = 0;
   }
 }

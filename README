@@ -13,15 +13,14 @@ MAGENTA  : Change occured 10000 attempts ago.
 
 
                   EXAMPLE Banner
------------------------------------------------------
-  2.00 | Mon Oct  3 02:43:12 5644 |   2.01 |  10.03
------------------------------------------------------
-   (1)              (2)               (3)      (4)
+----------------------------------------------
+  2.00 | Mon Oct  3 02:43:12 5644 |   2.01
+---------------------------------------------
+   (1)              (2)                (3)    
 
 1) delay between evaluations
 2) timestamp for this evaluation
 3) time since most recent change
-4) time since least recent change
 
 
 
