@@ -28,6 +28,8 @@ MAGENTA  : Change occured 10000 attempts ago.
 OPTIONS
 --------
 
+-c : Don't clear the terminal after each command.
+
 -d : You can change the default delay between commands.  Note that bigger
      strings will place higher demands on the CPU (and memory).  So there
      is a lower bound to how fast commands are executed.

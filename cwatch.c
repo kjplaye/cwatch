@@ -34,6 +34,7 @@ int history;
 
 int ansi_color[NUM_COLORS] = {31, 33, 32, 36, 35};
 int color_pos[NUM_COLORS+1] = {1, 10, 100, 1000, 10000};
+int clear_terminal = 1;
 
 #define VINDEX(y,w) ((y) * window_size + (w))
 int * score;
@@ -157,6 +158,7 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
   time_t tm;
   char time_str[MAX_TIME_STR];
 
+  if (clear_terminal) printf("\033[?1049h\033[H");
   strcpy(time_str,ctime(&tm));
   time_str[strlen(time_str)-1] = 0;
   tm = time(NULL);
@@ -223,6 +225,7 @@ void argparse(int argc, char ** argv, double * delay, int * max_str, int * half_
     printf(" cwatch [options] command\n");
     printf("\n");
     printf("Options:\n");
+    printf("  -c                      Don't clear terminal after commands\n");
     printf("  -d                      delay (default = 2 sec)\n");
     printf("  -w                      window_size (default = 400)\n");
     printf("  -s                      max_string_size (default = 10000)\n");
@@ -230,6 +233,12 @@ void argparse(int argc, char ** argv, double * delay, int * max_str, int * half_
     printf("\n");
     
     exit(1);
+  }
+
+  for(i=1;i<argc-1;i++) {
+    if (!strcmp(argv[i],"-c")) {
+      clear_terminal = 0;
+    }
   }
   
   for(i=1;i<argc-2;i++) {
