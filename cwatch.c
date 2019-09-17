@@ -1,4 +1,4 @@
-// gcc -O3 watch_c.c -o watch_c
+// gcc -O3 cwatch.c -o cwatch
 
 #include <stdio.h>
 #include <stdlib.h>
