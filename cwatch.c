@@ -192,15 +192,7 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
       }
       current_color = color[i];
     }
-    if ((color[i] != -1) && (model[i]==' ')) {
-      printf("_");
-    } else if ((color[i] != -1) && (model[i]=='\t')) {
-      for(j=0;j<8;j++) printf("_");
-    } else if ((color[i] != -1) && (model[i]=='\n')) {
-      printf("/\n");
-    } else {
-      printf("%c",model[i]);
-    }
+    printf("%c",model[i]);
   }
   if (model[strlen(model)-1] != '\n') printf("\n");
 }
