@@ -4,17 +4,17 @@ cwatch = c(olorized) watch
 Like watch, but colorizes changes according to the time since the last change.  
    * Use edit distance to find out which characters have changed.  
    * An edit, an insert, or a delete count as a change.  
-   * Changes are represented by colors:
+   * Changes are represented by colors.
 
 ## Color Meaning
 
 | Option | Description | |
 | ------ | ----------- |---|
 | RED    | Change occurred | 1 attempt ago, (just changed) |
-| YELLOW    | Change occurred | 10 attempt ago |
-| GREEN    | Change occurred | 100 attempt ago |
-| CYAN   | Change occurred | 1000 attempt ago |
-| MAGENTA | Change occurred | 10000 attempt ago |
+| YELLOW    | Change occurred | 10 attempts ago |
+| GREEN    | Change occurred | 100 attempts ago |
+| CYAN   | Change occurred | 1000 attempts ago |
+| MAGENTA | Change occurred | 10000 attempts ago |
 
 ## Example Outputs
 **cwatch date**
