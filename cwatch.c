@@ -82,8 +82,8 @@ int edit_distance_color(unsigned char * model, unsigned char * old, int * color,
 
   *difference_flag = 0;
 
-  len_model = strlen(model);
-  len_old = strlen(old);
+  len_model = strnlen(model, max_str);
+  len_old = strnlen(old, max_str);
   if (len_model==0 || len_old==0) {
     // Empty string, bail.
     for(y=0;y<len_model;y++)
@@ -162,7 +162,7 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
 
   tm = time(NULL);
   strcpy(time_str,ctime(&tm));
-  time_str[strlen(time_str)-1] = 0;
+  time_str[strnlen(time_str, max_str)-1] = 0;
   printf("\033[34m");
   printf("----------------------------------------------\n");
   printf("%6.2f | %s | %6.2f\n", duration, time_str, time_since_most_recent_change);
@@ -175,7 +175,7 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
     printf("EMPTY STRING\n");
     printf("\033[34m");
   }
-  if (strlen(model)>=max_str-1) {
+  if (strnlen(model, max_str)>=max_str-1) {
     printf("\033[31m");
     printf("STRING TRUNCATED - consider increasing max_string_size\n");
     printf("\033[34m");
@@ -183,7 +183,7 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
   printf("----------------------------------------------\n");
   printf("\033[0m");
   
-  for(i=0;i<strlen(model);i++) {
+  for(i=0;i<strnlen(model, max_str);i++) {
     if (color[i]!=current_color) {
       if (color[i]==-1) {
 	printf("\033[0m");
@@ -198,9 +198,9 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
 }
  
 double get_seconds(){
-   struct timeb tm;
-   tm.timezone = 0;
-   tm.dstflag = 0;
+  struct timeb tm;
+  tm.timezone = 0;
+  tm.dstflag = 0;
   ftime(&tm);
   return tm.time + tm.millitm * 0.001;
 }
