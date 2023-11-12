@@ -1,10 +1,10 @@
 // gcc -O3 cwatch.c -o cwatch
 
+#include <bits/time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include <sys/timeb.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -198,11 +198,10 @@ void cprint(unsigned char * model, int * color, double duration, int status, dou
 }
  
 double get_seconds(){
-  struct timeb tm;
-  tm.timezone = 0;
-  tm.dstflag = 0;
-  ftime(&tm);
-  return tm.time + tm.millitm * 0.001;
+  struct timespec ct;
+  clock_gettime(CLOCK_REALTIME, &ct);
+  double seconds = ct.tv_sec + ct.tv_nsec * 1e-9;
+  return seconds;
 }
 
 void argparse(int argc, char ** argv, double * delay, int * max_str, int * half_window_size, int * history) {
