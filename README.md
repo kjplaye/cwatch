@@ -8,8 +8,8 @@ Like watch, but colorizes changes according to the time since the last change.
 
 ## Color Meaning
 
-| Option | Description | |  |
-| ------ | ----------- |---|---|
+| Option | Description | |
+| ------ | ----------- |---|
 | RED    | Change occurred | 1 attempt ago, (just changed) |
 | YELLOW    | Change occurred | 10 attempt ago |
 | GREEN    | Change occurred | 100 attempt ago |
