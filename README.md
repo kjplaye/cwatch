@@ -1,25 +1,32 @@
-c(olorized) watch
-------------------
+cwatch = c(olorized) watch
+---
 
-Like watch, but colorize changes according to the time since the last change.  Use edit distance to find out which characters have changed.  An edit, an insert, or a delete count as a change.  Changes are represented by colors:
+Like watch, but colorizes changes according to the time since the last change.  
+   * Use edit distance to find out which characters have changed.  
+   * An edit, an insert, or a delete count as a change.  
+   * Changes are represented by colors:
 
-    RED  : Change occured     1 attempt  ago, (just changed)
- YELLOW  : Change occured    10 attempts ago.
-  GREEN  : Change occured   100 attempts ago.
-   CYAN  : Change occured  1000 attempts ago.
-MAGENTA  : Change occured 10000 attempts ago.
+## Color Meaning
 
-Example output for: cwatch date
+| Option | Description | |  |
+| ------ | ----------- |---|---|
+| RED    | Change occurred | 1 attempt ago, (just changed) |
+| YELLOW    | Change occurred | 10 attempt ago |
+| GREEN    | Change occurred | 100 attempt ago |
+| CYAN   | Change occurred | 1000 attempt ago |
+| MAGENTA | Change occurred | 10000 attempt ago |
+
+## Example Outputs
+**cwatch date**
 
 ![alt text](https://github.com/kjplaye/cwatch/blob/master/example_output_1.png?raw=true)
 
-Example output for: cwatch "cat /proc/meminfo | head"
+**cwatch "cat /proc/meminfo | head"**
 
 ![alt text](https://github.com/kjplaye/cwatch/blob/master/example_output_2.png?raw=true)
 
 
-OPTIONS
---------
+## Options
 
 -c : Don't clear the terminal after each command.
 
