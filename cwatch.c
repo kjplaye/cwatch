@@ -41,7 +41,7 @@ int *prev_y;
 int *match;
 
 #define RINDEX(h, i) ((h)*max_str + (i))
-unsigned char *ring_buffer;
+char *ring_buffer;
 double *frame_time;
 int rb_current = 0;
 int rb_size = 0;
@@ -70,12 +70,14 @@ int get_color(int index) {
     if ((index > color_pos[i - 1]) && (index <= color_pos[i]))
       return i;
   }
+
+  return 0;
 }
 
 // [y][w] --> (w+y-half_window_size, y)
 // (x,y)  --> [y][x-y+half_window_size]
-int edit_distance_color(unsigned char *model, unsigned char *old, int *color,
-                        int fill_color, int *difference_flag) {
+int edit_distance_color(char *model, char *old, int *color, int fill_color,
+			int *difference_flag) {
   int i, x, y, w, xx, yy, ww, ss, mm, best_i, best_ds, best_mm, best_xx,
       best_yy, best_ww, len_model, len_old;
   int dx[3] = {1, 0, 1};
@@ -159,8 +161,8 @@ int edit_distance_color(unsigned char *model, unsigned char *old, int *color,
   return STATUS_GOOD;
 }
 
-void cprint(unsigned char *model, int *color, double duration, int status,
-            double time_since_most_recent_change) {
+void cprint(char *model, int *color, double duration, int status,
+	    double time_since_most_recent_change) {
   int i, j;
   int current_color = -1;
   time_t tm;
@@ -299,7 +301,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Out of memory\n");
   }
 
-  if ((ring_buffer = malloc(sizeof(unsigned char) * history * max_str)) ==
+  if ((ring_buffer = malloc(sizeof(char) * history * max_str)) ==
       NULL) {
     fprintf(stderr, "Out of memory\n");
   }

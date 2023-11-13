@@ -3,7 +3,7 @@ cwatch = c(olorized) watch
 
 Like watch, but colorizes changes according to the time since the last change.  
    * Use edit distance to find out which characters have changed.  
-   * An edit, an insert, or a delete count as a change.  
+   * A replacement, an insert, or a delete count as a change.  
    * Changes are represented by colors.
 
 ## Color Meaning
