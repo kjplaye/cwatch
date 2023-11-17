@@ -25,6 +25,9 @@ Like watch, but colorizes changes according to the time since the last change.
 
 ![alt text](https://github.com/kjplaye/cwatch/blob/master/example_output_2.png?raw=true)
 
+## Installation
+
+Just run **make**.
 
 ## Options
 
