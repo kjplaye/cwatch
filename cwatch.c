@@ -7,6 +7,8 @@
 #include <unistd.h>
 
 #define NUM_COLORS 5
+#define NUM_ANSI_COLORS 7
+#define MAX_STR 100
 
 #define MATCH_SCORE 10
 #define INSERT_SCORE 1
@@ -23,7 +25,6 @@
 #define DEFAULT_DELAY 2.0
 #define SMALL_WAIT 0.01
 #define TEN_TO_THE_NINE 1000000L
-#define MAX_TIME_STR 100
 
 int max_str;
 int half_window_size;
@@ -31,6 +32,8 @@ int window_size;
 int history;
 
 int ansi_color[NUM_COLORS] = {31, 33, 32, 36, 35};
+char ansi_str[NUM_ANSI_COLORS][MAX_STR] = {"black", "red", "green", "yellow",
+					  "blue", "magenta", "cyan"};
 int color_pos[NUM_COLORS + 1] = {1, 10, 100, 1000, 10000};
 int clear_terminal = 1;
 
@@ -166,7 +169,7 @@ void cprint(char *model, int *color, double duration, int status,
   int i, j;
   int current_color = -1;
   time_t tm;
-  char time_str[MAX_TIME_STR];
+  char time_str[MAX_STR];
 
   if (clear_terminal)
     printf("\033[?1049h\033[H");
@@ -231,11 +234,19 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
     printf(" cwatch [options] command\n");
     printf("\n");
     printf("Options:\n");
-    printf("  -c                      Don't clear terminal after commands\n");
+    printf("  -c                      don't clear terminal after commands\n");
     printf("  -d                      delay (default = 2 sec)\n");
-    printf("  -w                      window_size (default = 400)\n");
-    printf("  -s                      max_string_size (default = 10000)\n");
     printf("  -h                      history to store (default = 10000)\n");
+    printf("  -p                      pick color diff color, color blind option\n");
+    printf("                              (");
+    for(int j=0; j < NUM_ANSI_COLORS; j++)
+      {
+	if (j) printf(", ");
+	printf("%s", ansi_str[j]);
+      }
+    printf(")\n");
+    printf("  -s                      max_string_size (default = 10000)\n");
+    printf("  -w                      window_size (default = 400)\n");
     printf("\n");
 
     exit(1);
@@ -254,8 +265,31 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
   }
 
   for (i = 1; i < argc - 2; i++) {
+    if (!strcmp(argv[i], "-h")) {
+      *history = atoi(argv[i + 1]);
+    }
+  }
+
+  for (i = 1; i < argc - 2; i++) {
     if (!strcmp(argv[i], "-s")) {
       *max_str = atoi(argv[i + 1]);
+    }
+  }
+
+  for (i = 1; i < argc - 2; i++) {
+    if (!strcmp(argv[i], "-p")) {
+      char * picked_color_str = argv[i + 1];
+      int j;
+      for (j = 0; j < NUM_ANSI_COLORS; j++) {
+	if (strncmp(picked_color_str, ansi_str[j], MAX_STR) == 0) break;
+      }
+      if (j>= NUM_ANSI_COLORS)
+	{
+	  fprintf(stderr, "Picked color '%s' does not match known ansi colors\n",
+		  picked_color_str);
+	  exit(1);
+	}
+      for(int k=0;k<NUM_COLORS;k++) ansi_color[k] = 30 + j;
     }
   }
 
@@ -265,11 +299,6 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
     }
   }
 
-  for (i = 1; i < argc - 2; i++) {
-    if (!strcmp(argv[i], "-h")) {
-      *history = atoi(argv[i + 1]);
-    }
-  }
 }
 
 int main(int argc, char **argv) {
