@@ -32,8 +32,8 @@ int window_size;
 int history;
 
 int ansi_color[NUM_COLORS] = {31, 33, 32, 36, 35};
-char ansi_str[NUM_ANSI_COLORS][MAX_STR] = {"black", "red", "green", "yellow",
-					  "blue", "magenta", "cyan"};
+char ansi_str[NUM_ANSI_COLORS][MAX_STR] = {
+    "black", "red", "green", "yellow", "blue", "magenta", "cyan"};
 int color_pos[NUM_COLORS + 1] = {1, 10, 100, 1000, 10000};
 int clear_terminal = 1;
 
@@ -80,7 +80,7 @@ int get_color(int index) {
 // [y][w] --> (w+y-half_window_size, y)
 // (x,y)  --> [y][x-y+half_window_size]
 int edit_distance_color(char *model, char *old, int *color, int fill_color,
-			int *difference_flag) {
+                        int *difference_flag) {
   int i, x, y, w, xx, yy, ww, ss, mm, best_i, best_ds, best_mm, best_xx,
       best_yy, best_ww, len_model, len_old;
   int dx[3] = {1, 0, 1};
@@ -165,7 +165,7 @@ int edit_distance_color(char *model, char *old, int *color, int fill_color,
 }
 
 void cprint(char *model, int *color, double duration, int status,
-	    double time_since_most_recent_change) {
+            double time_since_most_recent_change) {
   int i, j;
   int current_color = -1;
   time_t tm;
@@ -237,13 +237,14 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
     printf("  -c                      don't clear terminal after commands\n");
     printf("  -d                      delay (default = 2 sec)\n");
     printf("  -h                      history to store (default = 10000)\n");
-    printf("  -p                      pick color diff color, color blind option\n");
+    printf("  -p                      pick color diff color, color blind "
+           "option\n");
     printf("                              (");
-    for(int j=0; j < NUM_ANSI_COLORS; j++)
-      {
-	if (j) printf(", ");
-	printf("%s", ansi_str[j]);
-      }
+    for (int j = 0; j < NUM_ANSI_COLORS; j++) {
+      if (j)
+        printf(", ");
+      printf("%s", ansi_str[j]);
+    }
     printf(")\n");
     printf("  -s                      max_string_size (default = 10000)\n");
     printf("  -w                      window_size (default = 400)\n");
@@ -278,18 +279,19 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
 
   for (i = 1; i < argc - 2; i++) {
     if (!strcmp(argv[i], "-p")) {
-      char * picked_color_str = argv[i + 1];
+      char *picked_color_str = argv[i + 1];
       int j;
       for (j = 0; j < NUM_ANSI_COLORS; j++) {
-	if (strncmp(picked_color_str, ansi_str[j], MAX_STR) == 0) break;
+        if (strncmp(picked_color_str, ansi_str[j], MAX_STR) == 0)
+          break;
       }
-      if (j>= NUM_ANSI_COLORS)
-	{
-	  fprintf(stderr, "Picked color '%s' does not match known ansi colors\n",
-		  picked_color_str);
-	  exit(1);
-	}
-      for(int k=0;k<NUM_COLORS;k++) ansi_color[k] = 30 + j;
+      if (j >= NUM_ANSI_COLORS) {
+        fprintf(stderr, "Picked color '%s' does not match known ansi colors\n",
+                picked_color_str);
+        exit(1);
+      }
+      for (int k = 0; k < NUM_COLORS; k++)
+        ansi_color[k] = 30 + j;
     }
   }
 
@@ -298,7 +300,6 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
       *half_window_size = atoi(argv[i + 1]);
     }
   }
-
 }
 
 int main(int argc, char **argv) {
@@ -330,8 +331,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Out of memory\n");
   }
 
-  if ((ring_buffer = malloc(sizeof(char) * history * max_str)) ==
-      NULL) {
+  if ((ring_buffer = malloc(sizeof(char) * history * max_str)) == NULL) {
     fprintf(stderr, "Out of memory\n");
   }
   if ((frame_time = malloc(sizeof(double) * history)) == NULL) {
