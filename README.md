@@ -6,6 +6,14 @@ Like watch, but colorizes changes according to the time since the last change.
    * Use edit distance to find out which characters have changed.  
    * Changes are represented by colors.
 
+## Get cwatch in Ubuntu
+
+    sudo add-apt-repository ppa:kjplaye/ppa
+    sudo apt update
+    sudo apt install cwatch
+    man cwatch
+    cwatch date
+
 ## Color Meaning
 
 | Option | Description | |
