@@ -14,6 +14,10 @@ Like watch, but colorizes changes according to the time since the last change.
     man cwatch
     cwatch date
 
+## Get cwatch from source
+
+Git clone this repo and run make.
+
 ## Color Meaning
 
 | Option | Description | |
