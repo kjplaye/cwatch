@@ -1,4 +1,4 @@
-cwatch = c(olorized) watch
+cwatch - colorized watch
 ---
 
 Like watch, but colorizes changes according to the time since the last change.  
