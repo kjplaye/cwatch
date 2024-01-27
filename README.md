@@ -1,4 +1,4 @@
-cwatch - colorized watch
+cwatch - colorful version of watch
 ---
 
 Like watch, but colorizes changes according to the time since the last change.  
