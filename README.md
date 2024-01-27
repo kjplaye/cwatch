@@ -35,7 +35,7 @@ Like watch, but colorizes changes according to the time since the last change.
 
 ## Installation
 
-Just run **make**.
+For proper installation use the Ubuntu package above.  Otherwise just run **make** to get a binary.
 
 ## Options
 
