@@ -14,6 +14,10 @@ Like watch, but colorizes changes according to the time since the last change.
     man cwatch
     cwatch date
 
+## Get cwatch from source
+
+Git clone this repo and run make.
+
 ## Color Meaning
 
 | Option | Description | |
@@ -35,7 +39,7 @@ Like watch, but colorizes changes according to the time since the last change.
 
 ## Installation
 
-Just run **make**.
+For proper installation use the Ubuntu package above.  Otherwise just run **make** to get a binary.
 
 ## Options
 
