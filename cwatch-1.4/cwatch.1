@@ -1,0 +1,51 @@
+.TH CWATCH "1" "JANUARY 2024" "cwatch 1.0" "User Commands"
+.SH NAME
+cwatch - colorful version of watch
+.SH SYNOPSIS
+.B cwatch
+.SH DESCRIPTION
+Like watch, but colorizes changes according to the time since the last change.  
+    \(bu A replacement, an insert, or a delete count as a change.  
+    \(bu Use edit distance to find out which characters have changed.  
+    \(bu Changes are represented by colors.
+
+The colors coded are as follows:
+
+.TS
+center, tab(@);
+c c
+l l.
+color   @ steps since change
+------- @ ------------------
+RED     @ 1 
+YELLOW  @ 10 
+GREEN   @ 100 
+CYAN    @ 1000 
+MAGENTA @ 10000 
+.TE
+
+.SH OPTIONS
+
+.IP \fB\-c\fR
+Don't clear the terminal after each command.
+
+.IP \fB\-d\fR
+You can change the default delay between commands (see example).  Note that bigger strings will place higher demands on the CPU (and memory).  So there is a lower bound to how fast commands are executed.
+
+.IP \fB\-s\fR
+Max string length (default = 10000).
+
+.IP \fB\-w\fR
+Window size (default = 400).
+
+.IP \fB\-h\fR
+History length (default = 10000).
+
+.SH EXAMPLES
+Example #1: \fB cwatch date \fR
+
+Example #2: \fB cwatch -d 0.1 "cat /proc/meminfo | head" \fR
+
+.SH AUTHOR
+Kevin Player <kjplaye@gmail.com>
+.br
