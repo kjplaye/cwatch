@@ -20,7 +20,7 @@
 #define STATUS_WINDOW_SIZE_TOO_SMALL 2
 
 #define DEFAULT_MAX_STR 10000
-#define DEFAULT_HISTORY_SIZE 10000
+#define DEFAULT_HISTORY_SIZE 500
 #define DEFAULT_HALF_WINDOW_SIZE 400
 #define DEFAULT_DELAY 2.0
 #define SMALL_WAIT 0.01
@@ -34,7 +34,7 @@ int history;
 int ansi_color[NUM_COLORS] = {31, 33, 32, 36, 35};
 char ansi_str[NUM_ANSI_COLORS][MAX_STR] = {
     "black", "red", "green", "yellow", "blue", "magenta", "cyan"};
-int color_pos[NUM_COLORS + 1] = {1, 10, 100, 1000, 10000};
+int color_pos[NUM_COLORS + 1] = {1, 4, 20, 100, 500};
 int clear_terminal = 1;
 
 #define VINDEX(y, w) ((y)*window_size + (w))
