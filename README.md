@@ -1,10 +1,22 @@
-cwatch = c(olorized) watch
+cwatch - colorful version of watch
 ---
 
 Like watch, but colorizes changes according to the time since the last change.  
    * A replacement, an insert, or a delete count as a change.  
    * Use edit distance to find out which characters have changed.  
    * Changes are represented by colors.
+
+## Get cwatch in Ubuntu
+
+    sudo add-apt-repository ppa:kjplaye/ppa
+    sudo apt update
+    sudo apt install cwatch
+    man cwatch
+    cwatch date
+
+## Get cwatch from source
+
+Git clone this repo and run make.
 
 ## Color Meaning
 
@@ -27,7 +39,7 @@ Like watch, but colorizes changes according to the time since the last change.
 
 ## Installation
 
-Just run **make**.
+For proper installation use the Ubuntu package above.  Otherwise just run **make** to get a binary.
 
 ## Options
 
