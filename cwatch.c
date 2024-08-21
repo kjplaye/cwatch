@@ -81,9 +81,17 @@ int get_color(int index) {
 int edit_distance_color(char *model, char *old, int *color,
 			int fill_color, int *difference_flag,
 			int half_window_size) {
+  // Various things for three previous Viterbi nodes.
+  // Change in x.
   int dx[3] = {1, 0, 1};
+
+  // Change in y.
   int dy[3] = {1, 1, 0};
+
+  // Change in score.
   int ds[3] = {MATCH_SCORE, DELETE_SCORE, INSERT_SCORE};
+
+  // Change in number of matched.
   int dm[3] = {1, 0, 0};
 
   // A convenient alias.
@@ -97,13 +105,13 @@ int edit_distance_color(char *model, char *old, int *color,
   int len_model = strnlen(model, max_str);
   int len_old = strnlen(old, max_str);
   if (len_model == 0 || len_old == 0) {
-    // Empty string, set output color to .
+    // Empty string, set output to color determined by the history.
     for (int y = 0; y < len_model; y++) color[y] = fill_color;
     *difference_flag = 1;
     return STATUS_EMPTY_STRING;
   }
 
-  // Forward pass
+  // Forward pass, loop over y and window w indices of Viterbi array.
   score[VINDEX(0, 0)] = 0;
   match[VINDEX(0, 0)] = model[0] == old[0];
   for (int y = 0; y < len_model; y++)
@@ -113,7 +121,9 @@ int edit_distance_color(char *model, char *old, int *color,
         continue;
       if (x == 0 && y == 0)
         continue;
-      
+
+      // Try to find the best previous node and score,
+      // looping over the three directions given by i.
       int best_ds = 0;
       int best_i = 0;
       int best_mm = 0;
@@ -121,17 +131,25 @@ int edit_distance_color(char *model, char *old, int *color,
       int best_yy = 0;
       int best_ww = 0;       
       for (int i = 0; i < 3; i++) {
+	// Previous values xx, yy, and ww.
         int xx = x - dx[i];
         int yy = y - dy[i];
         int ww = xx - yy + half_window_size;
         if (xx < 0 || yy < 0 || ww < 0 || ww >= window_size)
           continue;
+
+	// score ss and matches mm.
         int ss = ds[i];
         int mm = dm[i];
+
+	// Handle case where they don't match.
         if (i == 0 && (model[y] != old[x])) {
           ss = ERROR_SCORE;
           mm = 0;
         }
+
+	// Check to see if we have a new best score and record
+	// corresponding information.
         if (score[VINDEX(yy, ww)] + ss > best_ds) {
           best_i = i;
           best_ds = score[VINDEX(yy, ww)] + ss;
@@ -141,29 +159,38 @@ int edit_distance_color(char *model, char *old, int *color,
           best_ww = ww;
         }
       }
+
+      // Set values from best previous node.
       score[VINDEX(y, w)] = best_ds;
       prev_x[VINDEX(y, w)] = best_xx;
       prev_y[VINDEX(y, w)] = best_yy;
       match[VINDEX(y, w)] = best_mm;
     }
 
-  // Backward pass
+  // Backward pass, trace the best nodes backwards starting with xx, yy.
   for (int xx = len_old - 1, yy = len_model - 1; xx > 0 || yy > 0;) {
     int ww = xx - yy + half_window_size;
+
+    // check if window_size is too small and if so bail.
     if (ww < 0 || ww >= window_size) {
-      // window_size too small, bail.
+    
       for (int y = 0; y < len_model; y++)
         color[y] = fill_color;
       *difference_flag = 1;
       return STATUS_WINDOW_SIZE_TOO_SMALL;
     }
+
+    // If we have a match, use the color for the history amount.
     if (!match[VINDEX(yy, ww)]) {
       color[yy] = fill_color;
       *difference_flag = 1;
     }
+
+    // Break out if we are done.
     if (yy == 0 && ww <= half_window_size)
       break;
 
+    // Go back a node.
     int y = prev_y[VINDEX(yy, ww)];
     int x = prev_x[VINDEX(yy, ww)];
     yy = y;
@@ -361,7 +388,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Out of memory\n");
   }
 
-  // Set up model array (Indexes column of Viterbi array).
+  // Set up model color array (Indexes column of Viterbi array).
   int *model_color;
   if ((model_color = malloc(sizeof(int) * max_str)) == NULL) {
     fprintf(stderr, "Out of memory\n");
@@ -416,7 +443,8 @@ int main(int argc, char **argv) {
       status |= edit_distance_color(&ring_buffer[RINDEX(rb_current, 0)],
 				    &ring_buffer[RINDEX(j, 0)],
 				    model_color,
-				    get_color(h), &difference_flag,
+				    get_color(h),
+				    &difference_flag,
 				    half_window_size);
 
       // If there is a difference, update time since change.
