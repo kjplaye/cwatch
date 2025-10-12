@@ -9,5 +9,6 @@ test: cwatch test_cwatch.c cwatch_lib.c
 	clang-format --dry-run --Werror cwatch_lib.c
 	clang-format --dry-run --Werror cwatch.c
 	clang-format --dry-run --Werror test_cwatch.c
+
 clean:
 	rm cwatch
