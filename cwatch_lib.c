@@ -43,14 +43,14 @@ int color_pos[NUM_COLORS + 1] = {1, 5, 25, 125, 625};
 
 // Indexing and definition of Viterbu arrays
 //     score, prev_x, prev_y, and match.
-#define VINDEX(y, w) ((y)*window_size + (w))
+#define VINDEX(y, w) ((y) * window_size + (w))
 int *score;
 int *prev_x;
 int *prev_y;
 int *match;
 
 // Indexing and definition of ring_buffer.
-#define RINDEX(h, i) ((h)*max_str + (i))
+#define RINDEX(h, i) ((h) * max_str + (i))
 char *ring_buffer;
 
 // Run the command and grab the input in buffer.
