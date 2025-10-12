@@ -66,8 +66,10 @@ void run_command(char *command, char *buffer) {
 
 // Return a color for 1 <= index < rb_size
 int get_color(int index) {
-  if (index == 0) return -1;
-  if (index == 1) return 0;
+  if (index == 0)
+    return -1;
+  if (index == 1)
+    return 0;
 
   for (int i = 1; i < NUM_COLORS; i++) {
     if ((index > color_pos[i - 1]) && (index <= color_pos[i]))
@@ -79,9 +81,8 @@ int get_color(int index) {
 
 // [y][w] --> (w+y-half_window_size, y)
 // (x,y)  --> [y][x-y+half_window_size]
-int edit_distance_color(char *model, char *old, int *color,
-			int fill_color, int *difference_flag,
-			int half_window_size) {
+int edit_distance_color(char *model, char *old, int *color, int fill_color,
+                        int *difference_flag, int half_window_size) {
   // Various things for three previous Viterbi nodes.
   // Change in x.
   int dx[3] = {1, 0, 1};
@@ -107,7 +108,8 @@ int edit_distance_color(char *model, char *old, int *color,
   int len_old = strnlen(old, max_str);
   if (len_model == 0 || len_old == 0) {
     // Empty string, set output to color determined by the history.
-    for (int y = 0; y < len_model; y++) color[y] = fill_color;
+    for (int y = 0; y < len_model; y++)
+      color[y] = fill_color;
     *difference_flag = 1;
     return STATUS_EMPTY_STRING;
   }
@@ -130,27 +132,27 @@ int edit_distance_color(char *model, char *old, int *color,
       int best_mm = 0;
       int best_xx = 0;
       int best_yy = 0;
-      int best_ww = 0;       
+      int best_ww = 0;
       for (int i = 0; i < 3; i++) {
-	// Previous values xx, yy, and ww.
+        // Previous values xx, yy, and ww.
         int xx = x - dx[i];
         int yy = y - dy[i];
         int ww = xx - yy + half_window_size;
         if (xx < 0 || yy < 0 || ww < 0 || ww >= window_size)
           continue;
 
-	// score ss and matches mm.
+        // score ss and matches mm.
         int ss = ds[i];
         int mm = dm[i];
 
-	// Handle case where they don't match.
+        // Handle case where they don't match.
         if (i == 0 && (model[y] != old[x])) {
           ss = ERROR_SCORE;
           mm = 0;
         }
 
-	// Check to see if we have a new best score and record
-	// corresponding information.
+        // Check to see if we have a new best score and record
+        // corresponding information.
         if (score[VINDEX(yy, ww)] + ss > best_ds) {
           best_i = i;
           best_ds = score[VINDEX(yy, ww)] + ss;
@@ -174,7 +176,7 @@ int edit_distance_color(char *model, char *old, int *color,
 
     // check if window_size is too small and if so bail.
     if (ww < 0 || ww >= window_size) {
-    
+
       for (int y = 0; y < len_model; y++)
         color[y] = fill_color;
       *difference_flag = 1;
@@ -201,11 +203,12 @@ int edit_distance_color(char *model, char *old, int *color,
   return STATUS_GOOD;
 }
 
-// Print the colorized output. 
+// Print the colorized output.
 void cprint(char *model, int *color, double duration, int status,
             double time_since_most_recent_change, int count) {
   // Clear the terminal with ANSI "alternate screen buffer".
-  if (clear_terminal) printf("\033[?1049h\033[H");
+  if (clear_terminal)
+    printf("\033[?1049h\033[H");
 
   // Read the time into a string.
   char time_str[MAX_STR];
@@ -251,10 +254,10 @@ void cprint(char *model, int *color, double duration, int status,
     if (color[i] != current_color) {
       // Print the appropriate ANSI color code.
       if (color[i] == -1) {
-	// Reset to original color.
+        // Reset to original color.
         printf("\033[0m");
       } else {
-	// The color code.
+        // The color code.
         printf("\033[%dm", ansi_color[color[i]]);
       }
       current_color = color[i];
@@ -297,7 +300,8 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
     printf("  -c                      don't clear terminal after commands\n");
     printf("  -d                      delay (default = 2 sec)\n");
     printf("  -h                      history to store (default = 10000)\n");
-    printf("  -i                      iterations to quit after (default = not used)\n");
+    printf("  -i                      iterations to quit after (default = not "
+           "used)\n");
     printf("  -p                      pick color diff color, color blind "
            "option\n");
     printf("                              (");
@@ -314,7 +318,7 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
     exit(1);
   }
 
-  // Read option: clear terminal.  
+  // Read option: clear terminal.
   for (int i = 1; i < argc - 1; i++) {
     if (!strcmp(argv[i], "-c")) {
       clear_terminal = 0;
@@ -328,7 +332,7 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
     }
   }
 
-  // Read option: history length.  
+  // Read option: history length.
   for (int i = 1; i < argc - 2; i++) {
     if (!strcmp(argv[i], "-h")) {
       *history = atoi(argv[i + 1]);
@@ -341,8 +345,8 @@ void argparse(int argc, char **argv, double *delay, int *max_str,
       *max_iters = atoi(argv[i + 1]);
     }
   }
-  
-  // Read option: max string size.  
+
+  // Read option: max string size.
   for (int i = 1; i < argc - 2; i++) {
     if (!strcmp(argv[i], "-s")) {
       *max_str = atoi(argv[i + 1]);
@@ -380,7 +384,8 @@ int program_main(int argc, char **argv) {
   // Parse arguments to get delay, max_str, window_size and
   // history length.
   double delay;
-  argparse(argc, argv, &delay, &max_str, &half_window_size, &history, &max_iters);
+  argparse(argc, argv, &delay, &max_str, &half_window_size, &history,
+           &max_iters);
 
   // Set up viterbi arrays.
   int window_size = 2 * half_window_size;
@@ -408,8 +413,7 @@ int program_main(int argc, char **argv) {
   // rb_size is the number of strings stored (max is history).
   int rb_current = 0;
   int rb_size = 0;
-  if ((ring_buffer = malloc(sizeof(char) * history * max_str))
-      == NULL) {
+  if ((ring_buffer = malloc(sizeof(char) * history * max_str)) == NULL) {
     fprintf(stderr, "Out of memory\n");
   }
 
@@ -434,10 +438,12 @@ int program_main(int argc, char **argv) {
 
     // Increase the length of the ring_buffer.
     // rb_current now points to most recent output.
-    if (++rb_size >= history) rb_size = history;
+    if (++rb_size >= history)
+      rb_size = history;
 
     // Remove color from the model.
-    for (int i = 0; i < max_str; i++) model_color[i] = -1;
+    for (int i = 0; i < max_str; i++)
+      model_color[i] = -1;
 
     // Loop over all history computing the edit distance.
     time_since_most_recent_change = 0.0;
@@ -445,21 +451,18 @@ int program_main(int argc, char **argv) {
     for (int h = rb_size - 1; h > 0; h--) {
       // Set j to be the index of history h back.
       int j = rb_current - h;
-      if (j < 0) j += history;
+      if (j < 0)
+        j += history;
 
       // Compute the edit distance
       int difference_flag;
-      status |= edit_distance_color(&ring_buffer[RINDEX(rb_current, 0)],
-				    &ring_buffer[RINDEX(j, 0)],
-				    model_color,
-				    get_color(h),
-				    &difference_flag,
-				    half_window_size);
+      status |= edit_distance_color(
+          &ring_buffer[RINDEX(rb_current, 0)], &ring_buffer[RINDEX(j, 0)],
+          model_color, get_color(h), &difference_flag, half_window_size);
 
       // If there is a difference, update time since change.
       if (difference_flag)
-        time_since_most_recent_change =
-	  frame_time[rb_current] - frame_time[j];
+        time_since_most_recent_change = frame_time[rb_current] - frame_time[j];
     }
 
     // Wait for delay.
@@ -469,12 +472,13 @@ int program_main(int argc, char **argv) {
     }
 
     // Print out the colorized most recent output.
-    cprint(&ring_buffer[RINDEX(rb_current, 0)], model_color,
-	   toc - tic, status, time_since_most_recent_change, count++);
+    cprint(&ring_buffer[RINDEX(rb_current, 0)], model_color, toc - tic, status,
+           time_since_most_recent_change, count++);
 
     // Advance the ring buffer.
     // rb_current will point to next new position.
-    if (++rb_current >= history) rb_current = 0;
+    if (++rb_current >= history)
+      rb_current = 0;
   }
 
   free(score);
